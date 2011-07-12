@@ -1,4 +1,4 @@
-from tests.helpers.deterministic_dingus import DeterministicDingus
+from deterministic_dingus import DeterministicDingus
 
 
 class WhenComparingDingusResults(object):
@@ -10,6 +10,7 @@ class WhenComparingDingusResults(object):
         assert self.dingus('an arg') == self.dingus('an arg')
         assert self.dingus() == self.dingus()
         assert self.dingus(foo='bar') == self.dingus(foo='bar')
+        assert self.dingus({'foo': 'bar'}) == self.dingus({'foo': 'bar'})
 
     def when_calling_with_different_args_should_not_be_equal(self):
         assert self.dingus('an arg') != self.dingus('other arg')
@@ -17,6 +18,7 @@ class WhenComparingDingusResults(object):
         assert self.dingus(foo='bar') != self.dingus(biz='bat')
         assert self.dingus(foo='bar') != self.dingus(foo='not bar')
         assert self.dingus(foo='bar') != self.dingus()
+        assert self.dingus({'foo': 'bar'}) != self.dingus({'foo': 2})
 
 
 class WhenGettingAttribute(object):
