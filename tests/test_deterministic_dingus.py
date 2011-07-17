@@ -1,5 +1,15 @@
-from deterministic_dingus import DeterministicDingus
+import os
 
+from dingus import Dingus
+
+from deterministic_dingus import DeterministicDingus, DingusWhitelistTestCase
+
+
+####
+##
+## DeterministicDingus
+##
+####
 
 class WhenComparingDingusResults(object):
 
@@ -28,3 +38,34 @@ class WhenGettingAttribute(object):
 
     def should_return_deterministic_dingus(self):
         assert isinstance(self.dingus.my_func, DeterministicDingus)
+
+
+####
+##
+## DingusWhitelistTestCase
+##
+####
+
+class WhenMockingOs(DingusWhitelistTestCase):
+
+    module = os
+    mock_list = ['isatty']
+
+    def setup(self):
+        self.old_isatty = os.isatty
+        self.old_kill = os.kill
+        DingusWhitelistTestCase.setup(self)
+
+    def teardown(self):
+        DingusWhitelistTestCase.teardown(self)
+        # Make sure it got put back
+        assert os.isatty == self.old_isatty
+
+    def should_dingus_isatty(self):
+        assert isinstance(os.isatty, Dingus)
+
+    def should_set_name_on_isatty(self):
+        assert repr(os.isatty) == '<Dingus isatty>'
+
+    def should_not_dingus_kill(self):
+        assert os.kill == self.old_kill

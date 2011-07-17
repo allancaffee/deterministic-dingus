@@ -74,3 +74,34 @@ class DeterministicDingus(Dingus):
 
         self._log_call('()', args, kwargs, rv)
         return rv
+
+
+class DingusWhitelistTestCase(object):
+    """A helpful base test case for unit testing.
+
+    This class is similar in function to the original :class:`DingusTestCase`
+    except that it operates on white list of what to mock rather than a black
+    list.  What to actually mock should be set as a class attribute on
+    inheriting classes as :data:`mock_list`.
+    """
+
+    module = None
+    """The module to mock.
+
+    This should be set in the concrete subclass.
+    """
+
+    mock_list = []
+    """The list of module attributes to mock.
+
+    This should be set in the concrete subclass.
+    """
+
+    def setup(self):
+        self.__old_module_dict = self.module.__dict__.copy()
+        for key in self.mock_list:
+            self.module.__dict__[key] = Dingus(key)
+
+    def teardown(self):
+        self.module.__dict__.clear()
+        self.module.__dict__.update(self.__old_module_dict)
