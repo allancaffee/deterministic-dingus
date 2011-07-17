@@ -97,10 +97,16 @@ class DingusWhitelistTestCase(object):
     This should be set in the concrete subclass.
     """
 
+    additional_mocks = []
+    """A list of additional attributes to be set on the class during :meth:`setup`.
+    """
+
     def setup(self):
         self.__old_module_dict = self.module.__dict__.copy()
         for key in self.mock_list:
             self.module.__dict__[key] = Dingus(key)
+        for key in self.additional_mocks:
+            setattr(self, key, Dingus(key))
 
     def teardown(self):
         self.module.__dict__.clear()

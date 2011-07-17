@@ -50,6 +50,7 @@ class WhenMockingOs(DingusWhitelistTestCase):
 
     module = os
     mock_list = ['isatty']
+    additional_mocks = ['foo']
 
     def setup(self):
         self.old_isatty = os.isatty
@@ -69,3 +70,9 @@ class WhenMockingOs(DingusWhitelistTestCase):
 
     def should_not_dingus_kill(self):
         assert os.kill == self.old_kill
+
+    def should_set_up_additional_mocks(self):
+        assert isinstance(self.foo, Dingus)
+
+    def should_set_name_on_additional_mocks(self):
+        assert repr(self.foo) == '<Dingus foo>'
