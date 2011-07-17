@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='deterministic-dingus',
-      version='0.0.2',
+      version='0.0.3',
       description='A handy extension',
       long_description=file('README.rst').read(),
       author='Allan Caffee',
