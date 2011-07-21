@@ -1,7 +1,16 @@
 from collections import MutableMapping
 
-from dingus import Dingus
+from dingus import Dingus, DingusTestCase, exception_raiser, DontCare
 
+
+__all__ = [
+    'DeterministicDingus',
+    'Dingus',
+    'DingusTestCase',
+    'DingusWhitelistTestCase',
+    'DontCare',
+    'exception_raiser',
+]
 
 class NonHashingMap(MutableMapping):
     """This is a :class:`dict`\ -like object that supports unhashable keys.
