@@ -1,8 +1,8 @@
 from setuptools import setup
 
 setup(name='deterministic-dingus',
-      version='0.0.3',
-      description='A handy extension',
+      version='0.0.4',
+      description='A handy extension of the dingus record and assert library',
       long_description=file('README.rst').read(),
       author='Allan Caffee',
       author_email='allan.caffee@gmail.com',
