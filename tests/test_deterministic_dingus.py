@@ -76,3 +76,15 @@ class WhenMockingOs(DingusWhitelistTestCase):
 
     def should_set_name_on_additional_mocks(self):
         assert repr(self.foo) == '<Dingus foo>'
+
+
+class WhenARunMethodIsDefined(DingusWhitelistTestCase):
+
+    module = os
+    additional_mocks = ['function']
+
+    def run(self):
+        self.function()
+
+    def should_call_run(self):
+        assert self.function.calls('()')

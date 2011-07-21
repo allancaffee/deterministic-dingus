@@ -108,6 +108,9 @@ class DingusWhitelistTestCase(object):
         for key in self.additional_mocks:
             setattr(self, key, Dingus(key))
 
+        if hasattr(self, 'run') and callable(self.run):
+            self.run()
+
     def teardown(self):
         self.module.__dict__.clear()
         self.module.__dict__.update(self.__old_module_dict)
