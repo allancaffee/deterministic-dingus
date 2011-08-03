@@ -1,7 +1,10 @@
 from setuptools import setup
 
+from version import get_git_version
+
+
 setup(name='deterministic-dingus',
-      version='0.0.4',
+      version=get_git_version(),
       description='A handy extension of the dingus record and assert library',
       long_description=file('README.rst').read(),
       author='Allan Caffee',
