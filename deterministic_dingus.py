@@ -92,7 +92,7 @@ class _DingusWhitelistTestCaseMetaclass(type):
     specify just the values that are specific to their tests.
     """
 
-    __aggretated_attrs = ('additional_mocks', 'mock_list')
+    __aggretated_attrs = ('additional_mocks', 'module_mocks', 'mock_list')
 
     def __new__(cls, name, bases, attrs):
         for attr_name in cls.__aggretated_attrs:
@@ -105,6 +105,7 @@ class _DingusWhitelistTestCaseMetaclass(type):
                 if hasattr(base, attr_name):
                     attrs[attr_name].update(getattr(base, attr_name))
 
+        attrs['module_mocks'].update(attrs['mock_list'])
         return type.__new__(cls, name, bases, attrs)
 
 
@@ -114,7 +115,7 @@ class DingusWhitelistTestCase(object):
     This class is similar in function to the original :class:`DingusTestCase`
     except that it operates on white list of what to mock rather than a black
     list.  What to actually mock should be set as a class attribute on
-    inheriting classes as :data:`mock_list`.
+    inheriting classes as :data:`module_mocks`.
     """
 
     __metaclass__ = _DingusWhitelistTestCaseMetaclass
@@ -124,19 +125,27 @@ class DingusWhitelistTestCase(object):
     This should be set in the concrete subclass.
     """
 
-    mock_list = []
-    """The list of module attributes to mock.
+    mock_list = set()
+    """Old name for `module_mocks`.
 
-    This should be set in the concrete subclass.
+    This attribute works identically to `module_mocks` but is honored for
+    backwords compatability.  Newly written tests should use `module_mocks`
+    instead.
     """
 
-    additional_mocks = []
-    """A list of additional attributes to be set on the class during :meth:`setup`.
+    module_mocks = set()
+    """A collection of names that should be mocked out in `module`.
+
+    `module` will be reset to its original contents during :meth:`teardown`.
+    """
+
+    additional_mocks = set()
+    """A collection of additional attributes to be set on the class during :meth:`setup`.
     """
 
     def setup(self):
         self.__old_module_dict = self.module.__dict__.copy()
-        for key in self.mock_list:
+        for key in self.module_mocks:
             self.module.__dict__[key] = Dingus(key)
         for key in self.additional_mocks:
             setattr(self, key, Dingus(key))

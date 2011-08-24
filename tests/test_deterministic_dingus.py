@@ -63,6 +63,43 @@ class WhenMakingNewDingusWhitelistTestCaseClass(object):
 
         class BaseClassA(DingusWhitelistTestCase):
             additional_mocks = Dingus.many(3)
+            module_mocks = Dingus.many(3)
+
+        class BaseClassB(DingusWhitelistTestCase):
+            additional_mocks = Dingus.many(3)
+            module_mocks = Dingus.many(3)
+
+        self.subclass_module_mocks = Dingus.many(3)
+        self.subclass_additional_mocks = Dingus.many(3)
+        class Subclass(BaseClassA, BaseClassB):
+            additional_mocks = self.subclass_additional_mocks
+            module_mocks = self.subclass_module_mocks
+
+        self.BaseClassA = BaseClassA
+        self.BaseClassB = BaseClassB
+        self.Subclass = Subclass
+
+    def should_aggregate_module_mocks(self):
+        assert self.Subclass.module_mocks  == (
+            set(self.subclass_module_mocks)
+            | self.BaseClassA.module_mocks
+            | self.BaseClassB.module_mocks
+        )
+
+    def should_aggregate_additional_mocks(self):
+        assert self.Subclass.additional_mocks == (
+            set(self.subclass_additional_mocks)
+            | self.BaseClassA.additional_mocks
+            | self.BaseClassB.additional_mocks
+        )
+
+
+class WhenMakingNewDingusWhitelistTestCaseClassWithMockList(object):
+
+    def setup(self):
+
+        class BaseClassA(DingusWhitelistTestCase):
+            additional_mocks = Dingus.many(3)
             mock_list = Dingus.many(3)
 
         class BaseClassB(DingusWhitelistTestCase):
@@ -79,8 +116,8 @@ class WhenMakingNewDingusWhitelistTestCaseClass(object):
         self.BaseClassB = BaseClassB
         self.Subclass = Subclass
 
-    def should_aggregate_mock_list(self):
-        assert self.Subclass.mock_list  == (
+    def should_aggregate_mock_list_into_module_mocks(self):
+        assert self.Subclass.module_mocks  == (
             set(self.subclass_mock_list)
             | self.BaseClassA.mock_list
             | self.BaseClassB.mock_list
@@ -110,7 +147,7 @@ class DescribeDingusWhitelistTestCaseClass(object):
 class WhenMockingOs(DingusWhitelistTestCase):
 
     module = os
-    mock_list = ['isatty']
+    module_mocks = ['isatty']
     additional_mocks = ['foo']
 
     def setup(self):
