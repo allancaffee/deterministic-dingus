@@ -2,7 +2,12 @@ import os
 
 from dingus import Dingus
 
-from deterministic_dingus import DeterministicDingus, DingusWhitelistTestCase
+from deterministic_dingus import (
+    DeterministicDingus,
+    DingusWhitelistTestCase,
+    _DingusWhitelistTestCaseMetaclass,
+)
+import deterministic_dingus as mod
 
 
 ####
@@ -42,9 +47,65 @@ class WhenGettingAttribute(object):
 
 ####
 ##
+## _DingusWhitelistTestCaseMetaclass
+##
+####
+
+class DescribeDingusWhitelistTestCaseMetaclass(object):
+
+    def should_be_metaclass(self):
+        assert issubclass(_DingusWhitelistTestCaseMetaclass, type)
+
+
+class WhenMakingNewDingusWhitelistTestCaseClass(object):
+
+    def setup(self):
+
+        class BaseClassA(DingusWhitelistTestCase):
+            additional_mocks = Dingus.many(3)
+            mock_list = Dingus.many(3)
+
+        class BaseClassB(DingusWhitelistTestCase):
+            additional_mocks = Dingus.many(3)
+            mock_list = Dingus.many(3)
+
+        self.subclass_mock_list = Dingus.many(3)
+        self.subclass_additional_mocks = Dingus.many(3)
+        class Subclass(BaseClassA, BaseClassB):
+            additional_mocks = self.subclass_additional_mocks
+            mock_list = self.subclass_mock_list
+
+        self.BaseClassA = BaseClassA
+        self.BaseClassB = BaseClassB
+        self.Subclass = Subclass
+
+    def should_aggregate_mock_list(self):
+        assert self.Subclass.mock_list  == (
+            set(self.subclass_mock_list)
+            | self.BaseClassA.mock_list
+            | self.BaseClassB.mock_list
+        )
+
+    def should_aggregate_additional_mocks(self):
+        assert self.Subclass.additional_mocks == (
+            set(self.subclass_additional_mocks)
+            | self.BaseClassA.additional_mocks
+            | self.BaseClassB.additional_mocks
+        )
+
+
+####
+##
 ## DingusWhitelistTestCase
 ##
 ####
+
+class DescribeDingusWhitelistTestCaseClass(object):
+
+    def should_use_DingusWhitelistTestCaseMetaclass_as_metaclass(self):
+        assert DingusWhitelistTestCase.__metaclass__ \
+            == _DingusWhitelistTestCaseMetaclass
+
 
 class WhenMockingOs(DingusWhitelistTestCase):
 

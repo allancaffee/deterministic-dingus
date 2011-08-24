@@ -85,6 +85,29 @@ class DeterministicDingus(Dingus):
         return rv
 
 
+class _DingusWhitelistTestCaseMetaclass(type):
+    """Aggregate relevant attributes.
+
+    This metaclass aggregates attributes of base classes so that subclasses can
+    specify just the values that are specific to their tests.
+    """
+
+    __aggretated_attrs = ('additional_mocks', 'mock_list')
+
+    def __new__(cls, name, bases, attrs):
+        for attr_name in cls.__aggretated_attrs:
+            if attr_name in attrs:
+                attrs[attr_name] = set(attrs[attr_name])
+            else:
+                attrs[attr_name] = set()
+
+            for base in bases:
+                if hasattr(base, attr_name):
+                    attrs[attr_name].update(getattr(base, attr_name))
+
+        return type.__new__(cls, name, bases, attrs)
+
+
 class DingusWhitelistTestCase(object):
     """A helpful base test case for unit testing.
 
@@ -94,6 +117,7 @@ class DingusWhitelistTestCase(object):
     inheriting classes as :data:`mock_list`.
     """
 
+    __metaclass__ = _DingusWhitelistTestCaseMetaclass
     module = None
     """The module to mock.
 
