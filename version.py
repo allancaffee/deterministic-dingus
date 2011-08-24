@@ -34,9 +34,17 @@
 __all__ = ("get_git_version")
 
 from subprocess import Popen, PIPE
+from os.path import isdir
 
 
 def call_git_describe():
+
+    # If the current directory doesn't have a .git directory than we may be
+    # inside of somebody else's git repos.  This can happen if someone installs
+    # our package from their project directory (e.g. with virtualenv).
+    if not isdir('.git'):
+        return None
+
     try:
         # Work around an apparent bug in git:
         # http://comments.gmane.org/gmane.comp.version-control.git/178169
